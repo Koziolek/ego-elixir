@@ -14,6 +14,7 @@ defmodule Ego.Lexer do
     case h do
       "(" -> token(t, accumulator ++ [:open_bracket])
       ")" -> token(t, accumulator ++ [:close_bracket])
+      " " -> token(t, accumulator ++ [:close_bracket])
       _ -> token(t, accumulator)
     end
   end
