@@ -34,5 +34,4 @@ defmodule Ego.Lexer do
   defp read_buffer(buffer) do
     [buffer |> Enum.join("") |> String.to_atom()]
   end
-
 end

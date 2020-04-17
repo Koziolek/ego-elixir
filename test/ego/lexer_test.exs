@@ -33,11 +33,12 @@ defmodule Ego.LexerTest do
   end
 
   test "(Print \"Hello (\n) World\")" do
-    result = Lexer.tokenize("""
-(Print \"Hello (
-    ) World\")
-    """)
+    result =
+      Lexer.tokenize("""
+      (Print \"Hello (
+      ) World\")
+      """)
+
     assert_lists_equal(result, [:open_bracket, :Print, :"Hello (\n) World", :close_bracket, :eof])
   end
-
 end
