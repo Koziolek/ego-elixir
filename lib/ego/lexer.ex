@@ -1,7 +1,7 @@
 defmodule Ego.Lexer do
   def tokenize(program) when is_binary(program) do
     program
-    |> String.to_charlist()
+    |> String.split("")
     |> token
   end
 
@@ -12,8 +12,9 @@ defmodule Ego.Lexer do
     [h | t] = charlist
 
     case h do
-      40 -> token(t, accumulator ++ [:open_bracket])
-      41 -> token(t, accumulator ++ [:close_bracket])
+      "(" -> token(t, accumulator ++ [:open_bracket])
+      ")" -> token(t, accumulator ++ [:close_bracket])
+      _ -> token(t, accumulator)
     end
   end
 
