@@ -1,21 +1,10 @@
 # Ego
 
-**TODO: Add description**
+Przykładowy kompilator języka Ego napisany w Elixirze. 
 
-## Installation
+Jest to twórcza interpretacja kodu napisanego w Javie, który znajdziecie [tu](https://github.com/symentispl/ego-lang).
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `ego` to your list of dependencies in `mix.exs`:
+Dotychczas ukazały się następujące wpisy
 
-```elixir
-def deps do
-  [
-    {:ego, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/ego](https://hexdocs.pm/ego).
-
+ * [Lekser Ego w Elixirze](https://koziolekweb.pl/2020/04/18/lexer-ego-w-elixirze/)
+ * [Lexer Ego w Elixirze część II – preoptymalizacje](https://koziolekweb.pl/2020/04/19/lexer-ego-w-elixirze-czesc-ii-preoptymalizacje/)
