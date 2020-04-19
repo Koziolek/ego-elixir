@@ -1,37 +1,34 @@
 defmodule Ego.Lexer do
   def tokenize(program) when is_binary(program) do
     program
-    |> String.split("", trim: true)
-    |> token
+    |> String.to_charlist()
+    |> tokens
+    |> Enum.reverse()
   end
 
-  defp token(charlist, accumulator \\ [], buffer \\ [], mode \\ :common)
-  defp token([], accumulator, buffer, _), do: accumulator ++ [:eof]
+  defp tokens(charlist, accumulator \\ [], buffer \\ [], mode \\ :common)
+  defp tokens([], accumulator, _, _), do: [:eof] ++ accumulator
 
-  defp token(charlist, accumulator, buffer, :common) do
-    [h | t] = charlist
-
-    case h do
-      "(" -> token(t, accumulator ++ read_buffer(buffer) ++ [:open_bracket], [])
-      ")" -> token(t, accumulator ++ read_buffer(buffer) ++ [:close_bracket], [])
-      " " -> token(t, accumulator ++ read_buffer(buffer), [])
-      "\"" -> token(t, accumulator ++ read_buffer(buffer), [], :text)
-      _ -> token(t, accumulator, buffer ++ [h])
+  defp tokens([h | t], accumulator, buffer, :common) do
+    cond do
+      '(' === [h]-> tokens(t, [:open_bracket] ++ read_buffer(buffer) ++ accumulator, [])
+      ')' === [h]-> tokens(t, [:close_bracket] ++ read_buffer(buffer) ++ accumulator, [])
+      ' ' === [h]-> tokens(t, read_buffer(buffer) ++ accumulator, [])
+      '"' === [h]-> tokens(t, read_buffer(buffer) ++ accumulator, [], :text)
+      true -> tokens(t, accumulator, [h] ++ buffer)
     end
   end
 
-  defp token(charlist, accumulator, buffer, :text) do
-    [h | t] = charlist
-
-    case h do
-      "\"" -> token(t, accumulator ++ read_buffer(buffer), [], :common)
-      _ -> token(t, accumulator, buffer ++ [h], :text)
+  defp tokens([h | t], accumulator, buffer, :text) do
+    cond do
+      '"' === [h] -> tokens(t, read_buffer(buffer) ++ accumulator, [], :common)
+      true -> tokens(t, accumulator, [h] ++ buffer, :text)
     end
   end
 
   defp read_buffer([]), do: []
 
   defp read_buffer(buffer) do
-    [buffer |> Enum.join("") |> String.to_atom()]
+    [buffer |> Enum.reverse() |> List.to_string() |> String.to_atom()]
   end
 end

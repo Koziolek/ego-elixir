@@ -41,4 +41,9 @@ defmodule Ego.LexerTest do
 
     assert_lists_equal(result, [:open_bracket, :Print, :"Hello (\n) World", :close_bracket, :eof])
   end
+
+  test "(\u0061\u0301)" do
+    result = Lexer.tokenize("(\u0061\u0301)")
+    assert_lists_equal(result, [:open_bracket, :"\u0061\u0301", :close_bracket, :eof])
+  end
 end
