@@ -47,7 +47,7 @@ defmodule Ego.Lexer do
       !has_only_digits(buffer, true, false) -> tokens(t, accumulator, [h] ++ buffer)
       is_digit?(h) -> tokens(t, accumulator, [h] ++ buffer, :number)
       '.' === [h] -> tokens(t, accumulator, [h] ++ buffer, :number)
-      ' ' === [h] && length(buffer) == 1 && is_sign?(buffer |> List.first) -> tokens(v, accumulator, buffer)
+      ' ' === [h] && length(buffer) == 1 && is_sign?(buffer |> List.first()) -> tokens(v, accumulator, buffer)
       ' ' === [h] || ')' === [h] -> tokens(v, [number(read_buffer(buffer))] ++ accumulator, [])
       true -> tokens(t, accumulator, [h] ++ buffer)
     end
