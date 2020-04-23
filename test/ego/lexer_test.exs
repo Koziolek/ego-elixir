@@ -90,4 +90,18 @@ defmodule Ego.LexerTest do
       %Token{kind: :eof, value: ''}
     ])
   end
+
+  test "(print (\"Hello\"))" do
+    result = Lexer.tokenize("(print (\"Hello\"))")
+
+    assert_lists_equal(result, [
+      %Token{kind: :open_bracket, value: '('},
+      %Token{kind: :atom, value: 'print'},
+      %Token{kind: :open_bracket, value: '('},
+      %Token{kind: :string, value: 'Hello'},
+      %Token{kind: :close_bracket, value: ')'},
+      %Token{kind: :close_bracket, value: ')'},
+      %Token{kind: :eof, value: ''}
+    ])
+  end
 end
