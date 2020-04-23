@@ -7,4 +7,4 @@ Jest to twórcza interpretacja kodu napisanego w Javie, który znajdziecie [tu](
 Dotychczas ukazały się następujące wpisy
 
  * [Lekser Ego w Elixirze](https://koziolekweb.pl/2020/04/18/lexer-ego-w-elixirze/)
- * [Lexer Ego w Elixirze część II – preoptymalizacje](https://koziolekweb.pl/2020/04/19/lexer-ego-w-elixirze-czesc-ii-preoptymalizacje/)
+ * [Lekser Ego w Elixirze część II – preoptymalizacje](https://koziolekweb.pl/2020/04/19/lexer-ego-w-elixirze-czesc-ii-preoptymalizacje/)
