@@ -1,11 +1,6 @@
 defmodule Ego.Lexer do
   import Ego.Token
-
-  defmacro is_new_line?(h) do
-    quote do
-      unquote([h]) === '\n'
-    end
-  end
+  import Ego.CharacterClass
 
   def tokenize(program) when is_binary(program) do
     program
@@ -21,11 +16,11 @@ defmodule Ego.Lexer do
 
   defp tokens([h | t], accumulator, buffer, :common) do
     cond do
-      '(' === [h] -> tokens(t, [open_bracket()] ++ [atom(read_buffer(buffer))] ++ accumulator, [])
-      ')' === [h] -> tokens(t, [close_bracket()] ++ [atom(read_buffer(buffer))] ++ accumulator, [])
-      ' ' === [h] -> tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [])
-      '"' === [h] -> tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [], :text)
-      ';' === [h] -> tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [], :comment)
+      is_open_bracket(h) -> tokens(t, [open_bracket()] ++ [atom(read_buffer(buffer))] ++ accumulator, [])
+      is_close_bracket(h) -> tokens(t, [close_bracket()] ++ [atom(read_buffer(buffer))] ++ accumulator, [])
+      is_space(h) -> tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [])
+      is_double_quote(h) -> tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [], :text)
+      is_semicolon(h) -> tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [], :comment)
       is_digit?(h) || is_sign?(h) -> tokens(t, accumulator, [h] ++ buffer, :number)
       true -> tokens(t, accumulator, [h] ++ buffer)
     end
@@ -33,7 +28,7 @@ defmodule Ego.Lexer do
 
   defp tokens([h | t], accumulator, buffer, :text) do
     cond do
-      '"' === [h] -> tokens(t, [string(read_buffer(buffer))] ++ accumulator, [], :common)
+      is_double_quote(h) -> tokens(t, [string(read_buffer(buffer))] ++ accumulator, [], :common)
       true -> tokens(t, accumulator, [h] ++ buffer, :text)
     end
   end
@@ -46,20 +41,11 @@ defmodule Ego.Lexer do
       !has_only_digits?(buffer, true, false) -> tokens(t, accumulator, [h] ++ buffer)
       is_digit?(h) -> tokens(t, accumulator, [h] ++ buffer, :number)
       is_dot?(h) -> tokens(t, accumulator, [h] ++ buffer, :number)
-      ' ' === [h] && length(buffer) == 1 && is_sign?(buffer |> List.first()) -> tokens(program, accumulator, buffer)
-      ' ' === [h] || ')' === [h] -> tokens(program, [number(read_buffer(buffer))] ++ accumulator, [])
+      is_space(h) && length(buffer) == 1 && is_sign?(buffer) -> tokens(program, accumulator, buffer)
+      is_space(h) || is_close_bracket(h) -> tokens(program, [number(read_buffer(buffer))] ++ accumulator, [])
       true -> tokens(t, accumulator, [h] ++ buffer)
     end
   end
-
-  defp is_digit?(h) when h >= 48 and h <= 57, do: true
-  defp is_digit?(_), do: false
-
-  defp is_sign?(h) when h == 43 or h == 45, do: true
-  defp is_sign?(_), do: false
-
-  defp is_dot?(h) when h == 46, do: true
-  defp is_dot?(_), do: false
 
   defp has_only_digits?([], v, _), do: v
   defp has_only_digits?([h | _] = buffer, v, _) when length(buffer) == 1, do: (is_digit?(h) || is_sign?(h)) && v
