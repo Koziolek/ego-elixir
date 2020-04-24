@@ -7,36 +7,53 @@ defmodule Ego.CharacterClass do
     end
   end
 
-  def is_digit?([h|_]) when h >= 48 and h <= 57, do: true
-  def is_digit?(h) when h >= 48 and h <= 57, do: true
-  def is_digit?(_), do: false
+  defmacro is_digit?(h) do
+    quote do
+      unquote(h) >= 48 and unquote(h) <= 57
+    end
+  end
 
-  def is_sign?([h|_]) when h == 43 or h == 45, do: true
-  def is_sign?(h) when h == 43 or h == 45, do: true
-  def is_sign?(_), do: false
+  defmacro is_sign?(h) do
+    quote do
+      unquote([h]) === '+' or unquote([h]) === '-' or unquote(h) === '+' or unquote(h) === '-'
+    end
+  end
 
-  def is_dot?([h|_]) when h == 46, do: true
-  def is_dot?(h) when h == 46, do: true
-  def is_dot?(_), do: false
+  defmacro is_dot?(h) do
+    quote do
+      unquote([h]) === '.'
+    end
+  end
 
-  def is_open_bracket?([h|_]) when h == 40, do: true
-  def is_open_bracket?(h) when h == 40, do: true
-  def is_open_bracket?(_), do: false
+  defmacro is_open_bracket?(h) do
+    quote do
+      unquote([h]) === '('
+    end
+  end
 
-  def is_close_bracket?([h|_]) when h == 41, do: true
-  def is_close_bracket?(h) when h == 41, do: true
-  def is_close_bracket?(_), do: false
+  defmacro is_close_bracket?(h) do
+    quote do
+      unquote([h]) === ')'
+    end
+  end
 
-  def is_space?([h|_]) when h == 32, do: true
-  def is_space?(h) when h == 32, do: true
-  def is_space?(_), do: false
+  defmacro is_space?(h)  do
+    quote do
+      unquote([h]) === ' '
+    end
+    end
 
-  def is_semicolon?([h|_]) when h == 59, do: true
-  def is_semicolon?(h) when h == 59, do: true
-  def is_semicolon?(_), do: false
+  defmacro is_semicolon?(h)  do
+    quote do
+      unquote([h]) === ';'
+    end
+  end
 
-  def is_double_quote?([h|_]) when h == 34, do: true
-  def is_double_quote?(h) when h == 34, do: true
-  def is_double_quote?(_), do: false
-  
+  defmacro is_double_quote?(h) do
+    quote do
+      unquote([h]) === '"'
+    end
+  end
+
+
 end

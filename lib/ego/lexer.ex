@@ -14,24 +14,16 @@ defmodule Ego.Lexer do
   defp tokens([], accumulator, buffer, :number), do: [eof()] ++ [number(read_buffer(buffer))] ++ accumulator
   defp tokens([], accumulator, buffer, _), do: [eof()] ++ [atom(read_buffer(buffer))] ++ accumulator
 
-  defp tokens([h | t], accumulator, buffer, :common) do
-    cond do
-      is_open_bracket?(h) -> tokens(t, [open_bracket()] ++ [atom(read_buffer(buffer))] ++ accumulator, [])
-      is_close_bracket?(h) -> tokens(t, [close_bracket()] ++ [atom(read_buffer(buffer))] ++ accumulator, [])
-      is_space?(h) -> tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [])
-      is_double_quote?(h) -> tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [], :text)
-      is_semicolon?(h) -> tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [], :comment)
-      is_digit?(h) || is_sign?(h) -> tokens(t, accumulator, [h] ++ buffer, :number)
-      true -> tokens(t, accumulator, [h] ++ buffer)
-    end
-  end
+  defp tokens([h | t], accumulator, buffer, :common) when is_open_bracket?(h), do: tokens(t, [open_bracket()] ++ [atom(read_buffer(buffer))] ++ accumulator, [])
+  defp tokens([h | t], accumulator, buffer, :common) when is_close_bracket?(h), do: tokens(t, [close_bracket()] ++ [atom(read_buffer(buffer))] ++ accumulator, [])
+  defp tokens([h | t], accumulator, buffer, :common) when is_space?(h), do: tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [])
+  defp tokens([h | t], accumulator, buffer, :common) when is_double_quote?(h), do: tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [], :text)
+  defp tokens([h | t], accumulator, buffer, :common) when is_semicolon?(h), do: tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [], :comment)
+  defp tokens([h | t], accumulator, buffer, :common) when is_digit?(h) or is_sign?(h), do: tokens(t, accumulator, [h] ++ buffer, :number)
+  defp tokens([h | t], accumulator, buffer, :common), do: tokens(t, accumulator, [h] ++ buffer)
 
-  defp tokens([h | t], accumulator, buffer, :text) do
-    cond do
-      is_double_quote?(h) -> tokens(t, [string(read_buffer(buffer))] ++ accumulator, [], :common)
-      true -> tokens(t, accumulator, [h] ++ buffer, :text)
-    end
-  end
+  defp tokens([h | t], accumulator, buffer, :text) when is_double_quote?(h), do: tokens(t, [string(read_buffer(buffer))] ++ accumulator, [], :common)
+  defp tokens([h | t], accumulator, buffer, :text), do: tokens(t, accumulator, [h] ++ buffer, :text)
 
   defp tokens([h | t], accumulator, _, :comment) when is_new_line?(h), do: tokens(t, accumulator, [])
   defp tokens([_ | t], accumulator, _, :comment), do: tokens(t, accumulator, [], :comment)
@@ -49,14 +41,8 @@ defmodule Ego.Lexer do
 
   defp has_only_digits?([], v, _), do: v
   defp has_only_digits?([h | _] = buffer, v, _) when length(buffer) == 1, do: (is_digit?(h) || is_sign?(h)) && v
-
-  defp has_only_digits?([h | t], v, has_dot) do
-    if has_dot do
-      has_only_digits?(t, is_digit?(h) && v, has_dot)
-    else
-      has_only_digits?(t, (is_digit?(h) || is_dot?(h)) && v, is_dot?(h))
-    end
-  end
+  defp has_only_digits?([h | t], v, has_dot) when has_dot == true, do: has_only_digits?(t, is_digit?(h) && v, has_dot)
+  defp has_only_digits?([h | t], v, has_dot), do: has_only_digits?(t, (is_digit?(h) || is_dot?(h)) && v, is_dot?(h))
 
   defp read_buffer([]), do: []
 
