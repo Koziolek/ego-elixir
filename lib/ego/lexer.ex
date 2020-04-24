@@ -16,11 +16,11 @@ defmodule Ego.Lexer do
 
   defp tokens([h | t], accumulator, buffer, :common) do
     cond do
-      is_open_bracket(h) -> tokens(t, [open_bracket()] ++ [atom(read_buffer(buffer))] ++ accumulator, [])
-      is_close_bracket(h) -> tokens(t, [close_bracket()] ++ [atom(read_buffer(buffer))] ++ accumulator, [])
-      is_space(h) -> tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [])
-      is_double_quote(h) -> tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [], :text)
-      is_semicolon(h) -> tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [], :comment)
+      is_open_bracket?(h) -> tokens(t, [open_bracket()] ++ [atom(read_buffer(buffer))] ++ accumulator, [])
+      is_close_bracket?(h) -> tokens(t, [close_bracket()] ++ [atom(read_buffer(buffer))] ++ accumulator, [])
+      is_space?(h) -> tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [])
+      is_double_quote?(h) -> tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [], :text)
+      is_semicolon?(h) -> tokens(t, [atom(read_buffer(buffer))] ++ accumulator, [], :comment)
       is_digit?(h) || is_sign?(h) -> tokens(t, accumulator, [h] ++ buffer, :number)
       true -> tokens(t, accumulator, [h] ++ buffer)
     end
@@ -28,7 +28,7 @@ defmodule Ego.Lexer do
 
   defp tokens([h | t], accumulator, buffer, :text) do
     cond do
-      is_double_quote(h) -> tokens(t, [string(read_buffer(buffer))] ++ accumulator, [], :common)
+      is_double_quote?(h) -> tokens(t, [string(read_buffer(buffer))] ++ accumulator, [], :common)
       true -> tokens(t, accumulator, [h] ++ buffer, :text)
     end
   end
@@ -41,8 +41,8 @@ defmodule Ego.Lexer do
       !has_only_digits?(buffer, true, false) -> tokens(t, accumulator, [h] ++ buffer)
       is_digit?(h) -> tokens(t, accumulator, [h] ++ buffer, :number)
       is_dot?(h) -> tokens(t, accumulator, [h] ++ buffer, :number)
-      is_space(h) && length(buffer) == 1 && is_sign?(buffer) -> tokens(program, accumulator, buffer)
-      is_space(h) || is_close_bracket(h) -> tokens(program, [number(read_buffer(buffer))] ++ accumulator, [])
+      is_space?(h) && length(buffer) == 1 && is_sign?(buffer) -> tokens(program, accumulator, buffer)
+      is_space?(h) || is_close_bracket?(h) -> tokens(program, [number(read_buffer(buffer))] ++ accumulator, [])
       true -> tokens(t, accumulator, [h] ++ buffer)
     end
   end
